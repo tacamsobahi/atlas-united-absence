@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Squad Absences</title>
+<title>ATLAS UNITED Absences</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@500&display=swap" rel="stylesheet">
 
@@ -14,10 +14,28 @@
   3. Go to Build > Realtime Database > Create database
   4. Choose "Start in test mode" (allows read/write)
   5. Copy your database URL below (looks like https://your-project-default-rtdb.firebaseio.com)
+  6. Add your players to the PLAYERS list below
 ============================================================ -->
 <script>
   const FIREBASE_URL = "https://atlas-united-default-rtdb.europe-west1.firebasedatabase.app";
-  const TEAM_NAME    = "ATLAS UNITED"; // Change to your team name
+  const TEAM_NAME    = "ATLAS UNITED";
+  const PLAYERS = [
+    "BABOUNIA Mohamed",
+    "BEDDAA Ahmed",
+    "BENABOU Ayoub",
+    "BENHARI Morad",
+    "BOUACHRINE Rayhane",
+    "BOUCHBOUK Salim",
+    "BOUYAQBA Brahim",
+    "CHEGDANI Abdallah",
+    "ERRAJI Jaafar",
+    "ES-SAFHI Mohamed Amine",
+    "GHRISSI Karim",
+    "KHABLA Aziz",
+    "MOUSLIM Ayoub", 
+    "SOBAHI Mohamed",
+    "TARCHOUN Younes",
+    "ZARAIDI Anas" ];
 </script>
 <!-- ============================================================ -->
 
@@ -86,6 +104,7 @@
     border-radius: 12px;
     padding: 4px;
     margin-bottom: 1.75rem;
+    overflow-x: auto;
   }
   .tab {
     flex: 1; padding: 9px 8px;
@@ -94,7 +113,7 @@
     border: none; border-radius: 9px;
     background: transparent; color: var(--muted);
     cursor: pointer; transition: all .18s;
-    text-align: center;
+    text-align: center; white-space: nowrap;
   }
   .tab:hover { color: var(--text); }
   .tab.active { background: var(--green); color: #fff; }
@@ -119,7 +138,8 @@
   .form-field { display: flex; flex-direction: column; gap: 5px; }
   .form-field.full { grid-column: 1 / -1; }
   label { font-size: 12px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
-  input[type=text], input[type=date] {
+
+  input[type=text], input[type=date], select {
     font-family: 'DM Sans', sans-serif;
     font-size: 14px; font-weight: 500;
     background: var(--bg3); color: var(--text);
@@ -127,10 +147,23 @@
     border-radius: 9px; padding: 10px 14px;
     outline: none; transition: border .18s;
     width: 100%;
+    appearance: none; -webkit-appearance: none;
   }
   input[type=text]::placeholder { color: var(--muted); font-weight: 400; }
-  input:focus { border-color: var(--green); }
+  input:focus, select:focus { border-color: var(--green); }
   input[type=date]::-webkit-calendar-picker-indicator { filter: invert(.5); cursor: pointer; }
+
+  .select-wrap { position: relative; }
+  .select-wrap::after {
+    content: '';
+    position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+    width: 0; height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid var(--muted);
+    pointer-events: none;
+  }
+  select option { background: var(--bg3); }
 
   /* ── Buttons ── */
   .btn {
@@ -149,18 +182,16 @@
     padding: 5px 12px; border-radius: 7px;
   }
   .btn-ghost:hover { color: var(--red); border-color: var(--red); }
+  .btn-sm { font-size: 13px; padding: 7px 14px; border-radius: 8px; }
 
-  /* ── Error / success ── */
+  /* ── Messages ── */
   .msg { font-size: 13px; padding: 9px 14px; border-radius: 8px; margin-top: 10px; }
   .msg-error { background: var(--red-l); color: #b91c1c; }
   .msg-ok    { background: var(--green-l); color: #15803d; }
 
   /* ── Absence rows ── */
   .player-block { margin-bottom: 1.25rem; }
-  .player-header {
-    display: flex; align-items: center; gap: 10px;
-    margin-bottom: .6rem;
-  }
+  .player-header { display: flex; align-items: center; gap: 10px; margin-bottom: .6rem; }
   .avatar {
     width: 34px; height: 34px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
@@ -173,18 +204,15 @@
     background: var(--bg3); border-radius: 9px;
     margin-bottom: 6px; flex-wrap: wrap;
   }
-  .absence-dates {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px; color: var(--text);
-  }
+  .absence-dates { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--text); }
   .absence-reason { font-size: 13px; color: var(--muted); flex: 1; }
   .badge {
     font-size: 11px; font-weight: 700; letter-spacing: .05em;
     padding: 3px 9px; border-radius: 5px; text-transform: uppercase;
   }
-  .badge-now  { background: var(--red-l);   color: var(--red); }
-  .badge-past { background: var(--bg2);      color: var(--muted); border: 1px solid var(--border); }
-  .badge-soon { background: var(--amber-l);  color: var(--amber); }
+  .badge-now  { background: var(--red-l);  color: var(--red); }
+  .badge-past { background: var(--bg2);    color: var(--muted); border: 1px solid var(--border); }
+  .badge-soon { background: var(--amber-l);color: var(--amber); }
 
   /* ── Check tab ── */
   .check-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.25rem; }
@@ -216,7 +244,6 @@
   .config-warn strong { display: block; margin-bottom: .25rem; font-size: 15px; }
   .config-warn code { font-family: monospace; background: rgba(0,0,0,.1); padding: 2px 6px; border-radius: 4px; }
 
-  /* ── Spinner ── */
   .spinner {
     width: 32px; height: 32px; border-radius: 50%;
     border: 3px solid var(--border2);
@@ -225,8 +252,6 @@
     margin: 2rem auto;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-
-  /* ── Divider ── */
   hr { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
 </style>
 </head>
@@ -263,7 +288,11 @@
       <div class="form-grid">
         <div class="form-field full">
           <label>Your name</label>
-          <input type="text" id="inp-name" placeholder="e.g. Lucas Martin" autocomplete="name">
+          <div class="select-wrap">
+            <select id="inp-name">
+              <option value="">— Select your name —</option>
+            </select>
+          </div>
         </div>
         <div class="form-field">
           <label>From</label>
@@ -291,7 +320,7 @@
   <div id="tab-list" style="display:none">
     <div class="stats">
       <div class="stat"><div class="stat-val" id="stat-total">—</div><div class="stat-lbl">Total absences</div></div>
-      <div class="stat"><div class="stat-val" id="stat-players">—</div><div class="stat-lbl">Players listed</div></div>
+      <div class="stat"><div class="stat-val" id="stat-players">—</div><div class="stat-lbl">Players in squad</div></div>
       <div class="stat"><div class="stat-val" id="stat-now" style="color:var(--red)">—</div><div class="stat-lbl">Absent today</div></div>
     </div>
     <div id="list-content"><div class="spinner"></div></div>
@@ -308,10 +337,10 @@
     </div>
     <div id="check-result"></div>
   </div>
+
 </main>
 
 <script>
-/* ── Helpers ── */
 const COLORS = [
   {fg:'#2EB87E',bg:'rgba(46,184,126,.15)'},{fg:'#f25c5c',bg:'rgba(242,92,92,.13)'},
   {fg:'#7c6ee6',bg:'rgba(124,110,230,.13)'},{fg:'#f5a623',bg:'rgba(245,166,35,.13)'},
@@ -319,7 +348,10 @@ const COLORS = [
   {fg:'#a78bfa',bg:'rgba(167,139,250,.13)'},{fg:'#34d399',bg:'rgba(52,211,153,.13)'},
 ];
 let colorMap={}, colorIdx=0;
-function playerColor(name){ if(!colorMap[name]){colorMap[name]=colorIdx%COLORS.length;colorIdx++;} return COLORS[colorMap[name]]; }
+function playerColor(name){
+  if(colorMap[name]===undefined){colorMap[name]=colorIdx%COLORS.length;colorIdx++;}
+  return COLORS[colorMap[name]];
+}
 function initials(n){ return n.trim().split(' ').map(w=>w[0]?.toUpperCase()||'').slice(0,2).join(''); }
 function today(){ return new Date().toISOString().split('T')[0]; }
 function fmtDate(d){
@@ -329,93 +361,99 @@ function fmtDate(d){
   return `${parseInt(day)} ${months[parseInt(m)-1]}`;
 }
 
-/* ── Firebase REST ── */
 const DB = FIREBASE_URL.replace(/\/$/,'');
 function isConfigured(){ return !DB.includes('YOUR-PROJECT'); }
 
-async function fbGet(){
-  const r=await fetch(`${DB}/absences.json`);
-  const d=await r.json();
-  if(!d) return [];
-  return Object.entries(d).map(([id,v])=>({...v,_key:id}));
-}
-async function fbPush(data){
-  const r=await fetch(`${DB}/absences.json`,{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+async function fbGet(path){
+  const r=await fetch(`${DB}/${path}.json`);
   return r.json();
 }
-async function fbDelete(key){
-  await fetch(`${DB}/absences/${key}.json`,{method:'DELETE'});
+async function fbPush(path,data){
+  const r=await fetch(`${DB}/${path}.json`,{method:'POST',body:JSON.stringify(data),headers:{'Content-Type':'application/json'}});
+  return r.json();
+}
+async function fbDelete(path){
+  await fetch(`${DB}/${path}.json`,{method:'DELETE'});
 }
 
-/* ── State ── */
 let absences=[];
 
-async function loadAbsences(){
+async function loadAll(){
   if(!isConfigured()){
     document.getElementById('config-warning').style.display='';
-    absences=[];
     return;
   }
-  try{ absences=await fbGet(); rebuildColors(); }
-  catch(e){ console.error(e); }
+  try{
+    const absRaw = await fbGet('absences');
+    absences = absRaw ? Object.entries(absRaw).map(([id,v])=>({...v,_key:id})) : [];
+    rebuildColors();
+    updateHeader();
+  }catch(e){ console.error(e); }
 }
-function rebuildColors(){ absences.forEach(a=>{ if(!colorMap[a.name]){colorMap[a.name]=colorIdx%COLORS.length;colorIdx++;} }); }
 
-/* ── Tabs ── */
+function rebuildColors(){
+  [...PLAYERS, ...absences.map(a=>a.name)].forEach(n=>{
+    if(colorMap[n]===undefined){colorMap[n]=colorIdx%COLORS.length;colorIdx++;}
+  });
+}
+
+function populateDropdown(){
+  const sel=document.getElementById('inp-name');
+  sel.innerHTML='<option value="">— Select your name —</option>';
+  [...PLAYERS].sort((a,b)=>a.localeCompare(b)).forEach(name=>{
+    const opt=document.createElement('option');
+    opt.value=name; opt.textContent=name;
+    sel.appendChild(opt);
+  });
+}
+
+const ALL_TABS=['add','list','check'];
 let currentTab='add';
 function switchTab(t){
-  ['add','list','check'].forEach(id=>{
+  ALL_TABS.forEach(id=>{
     document.getElementById('tab-'+id).style.display=id===t?'':'none';
-    document.querySelectorAll('.tab')[['add','list','check'].indexOf(id)].classList.toggle('active',id===t);
+    document.querySelectorAll('.tab')[ALL_TABS.indexOf(id)].classList.toggle('active',id===t);
   });
   currentTab=t;
   if(t==='list') renderList();
   if(t==='check'){ const d=document.getElementById('inp-check').value; if(d) checkDate(); }
 }
 
-/* ── Add absence ── */
 async function addAbsence(){
-  const name=document.getElementById('inp-name').value.trim();
+  const name=document.getElementById('inp-name').value;
   const from=document.getElementById('inp-from').value;
   const to=document.getElementById('inp-to').value;
   const reason=document.getElementById('inp-reason').value.trim();
   const msgEl=document.getElementById('add-msg');
   const btn=document.getElementById('add-btn');
+  function showMsg(t,type){ msgEl.className='msg msg-'+type; msgEl.textContent=t; msgEl.style.display=''; }
 
-  function showMsg(text,type){ msgEl.className='msg msg-'+type; msgEl.textContent=text; msgEl.style.display=''; }
-
-  if(!isConfigured()){ showMsg('Firebase is not configured. Edit the FIREBASE_URL in index.html.','error'); return; }
-  if(!name){ showMsg('Please enter your name.','error'); return; }
+  if(!isConfigured()){ showMsg('Firebase is not configured.','error'); return; }
+  if(!name){ showMsg('Please select your name.','error'); return; }
   if(!from||!to){ showMsg('Please choose a start and end date.','error'); return; }
   if(from>to){ showMsg('The end date must be after the start date.','error'); return; }
 
   msgEl.style.display='none';
   btn.disabled=true; btn.textContent='Saving…';
-
   try{
-    await fbPush({name,from,to,reason,added:new Date().toISOString()});
-    await loadAbsences();
-    updateHeader();
+    await fbPush('absences',{name,from,to,reason,added:new Date().toISOString()});
+    await loadAll();
     document.getElementById('inp-name').value='';
     document.getElementById('inp-from').value='';
     document.getElementById('inp-to').value='';
     document.getElementById('inp-reason').value='';
-    showMsg('Absence saved successfully!','ok');
-  }catch(e){
-    showMsg('Error saving. Check your Firebase configuration.','error');
-  }
+    showMsg('Absence saved!','ok');
+  }catch(e){ showMsg('Error saving. Check your Firebase URL.','error'); }
   btn.disabled=false;
   btn.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg> Save absence';
 }
 
-/* ── Render list ── */
 function renderList(){
   updateStats();
   const el=document.getElementById('list-content');
   const t=today();
   const sorted=[...absences].sort((a,b)=>a.from.localeCompare(b.from));
-
-  if(!sorted.length){ el.innerHTML='<p class="empty">No absences recorded yet. Be the first to add one!</p>'; return; }
+  if(!sorted.length){ el.innerHTML='<p class="empty">No absences recorded yet.</p>'; return; }
 
   const grouped={};
   sorted.forEach(a=>{ if(!grouped[a.name]) grouped[a.name]=[]; grouped[a.name].push(a); });
@@ -423,19 +461,13 @@ function renderList(){
   let html='';
   Object.keys(grouped).sort().forEach(name=>{
     const {fg,bg}=playerColor(name);
-    html+=`<div class="player-block">
-      <div class="player-header">
-        <div class="avatar" style="background:${bg};color:${fg}">${initials(name)}</div>
-        <span class="player-name">${name}</span>
-      </div>`;
+    html+=`<div class="player-block"><div class="player-header">
+      <div class="avatar" style="background:${bg};color:${fg}">${initials(name)}</div>
+      <span class="player-name">${name}</span></div>`;
     grouped[name].forEach(a=>{
-      const active=a.from<=t&&a.to>=t;
-      const past=a.to<t;
+      const active=a.from<=t&&a.to>=t, past=a.to<t;
       const soon=!active&&!past&&a.from<=new Date(Date.now()+7*86400000).toISOString().split('T')[0];
-      let badge='';
-      if(active) badge='<span class="badge badge-now">Absent now</span>';
-      else if(past) badge='<span class="badge badge-past">Past</span>';
-      else if(soon) badge='<span class="badge badge-soon">This week</span>';
+      let badge=active?'<span class="badge badge-now">Absent now</span>':past?'<span class="badge badge-past">Past</span>':soon?'<span class="badge badge-soon">This week</span>':'';
       html+=`<div class="absence-row">
         <span class="absence-dates">${fmtDate(a.from)} → ${fmtDate(a.to)}</span>
         ${a.reason?`<span class="absence-reason">${a.reason}</span>`:'<span class="absence-reason"></span>'}
@@ -450,69 +482,58 @@ function renderList(){
 
 async function removeAbsence(key){
   if(!confirm('Delete this absence?')) return;
-  await fbDelete(key);
-  await loadAbsences();
+  await fbDelete(`absences/${key}`);
+  await loadAll();
   renderList();
-  updateHeader();
 }
 
-/* ── Stats ── */
 function updateStats(){
   const t=today();
   const nowAbsent=new Set(absences.filter(a=>a.from<=t&&a.to>=t).map(a=>a.name));
   document.getElementById('stat-total').textContent=absences.length;
-  document.getElementById('stat-players').textContent=new Set(absences.map(a=>a.name)).size;
+  document.getElementById('stat-players').textContent=PLAYERS.length;
   document.getElementById('stat-now').textContent=nowAbsent.size;
 }
+
 function updateHeader(){
   document.getElementById('team-name-header').textContent=TEAM_NAME;
   const t=today();
   const absent=new Set(absences.filter(a=>a.from<=t&&a.to>=t).map(a=>a.name));
   document.getElementById('header-sub').textContent=
-    absent.size>0 ? `${absent.size} player${absent.size!==1?'s':''} absent today` : 'Everyone available today';
+    absent.size>0?`${absent.size} player${absent.size!==1?'s':''} absent today`:'Everyone available today';
 }
 
-/* ── Check date ── */
 function checkDate(){
   const d=document.getElementById('inp-check').value;
   const el=document.getElementById('check-result');
   if(!d){ el.innerHTML=''; return; }
-
   const absent=absences.filter(a=>a.from<=d&&a.to>=d);
-  const allNames=[...new Set(absences.map(a=>a.name))];
-  const available=allNames.filter(n=>!absent.find(a=>a.name===n));
+  const absentNames=new Set(absent.map(a=>a.name));
+  const available=PLAYERS.filter(p=>!absentNames.has(p));
 
   let html='<div class="check-grid">';
-
   html+=`<div class="check-card"><h3 class="absent-title">Absent (${absent.length})</h3>`;
   if(!absent.length) html+='<p class="empty">Nobody declared absent</p>';
   absent.forEach(a=>{
     const {fg,bg}=playerColor(a.name);
-    html+=`<div class="check-player">
-      <div class="avatar" style="width:28px;height:28px;font-size:11px;background:${bg};color:${fg}">${initials(a.name)}</div>
-      <div><span>${a.name}</span>${a.reason?`<div class="check-reason">${a.reason}</div>`:''}</div>
-    </div>`;
+    html+=`<div class="check-player"><div class="avatar" style="width:28px;height:28px;font-size:11px;background:${bg};color:${fg}">${initials(a.name)}</div>
+      <div><span>${a.name}</span>${a.reason?`<div class="check-reason">${a.reason}</div>`:''}</div></div>`;
   });
-  html+=`</div>`;
-
-  html+=`<div class="check-card"><h3 class="avail-title">Available (${available.length})</h3>`;
-  if(!allNames.length) html+='<p class="empty">No players in the system yet</p>';
+  html+=`</div><div class="check-card"><h3 class="avail-title">Available (${available.length})</h3>`;
+  if(!PLAYERS.length) html+='<p class="empty">No players configured yet</p>';
   else if(!available.length) html+='<p class="empty">No players available</p>';
-  available.forEach(n=>{
-    const {fg,bg}=playerColor(n);
-    html+=`<div class="check-player">
-      <div class="avatar" style="width:28px;height:28px;font-size:11px;background:${bg};color:${fg}">${initials(n)}</div>
-      <span>${n}</span>
-    </div>`;
+  available.forEach(name=>{
+    const {fg,bg}=playerColor(name);
+    html+=`<div class="check-player"><div class="avatar" style="width:28px;height:28px;font-size:11px;background:${bg};color:${fg}">${initials(name)}</div><span>${name}</span></div>`;
   });
   html+=`</div></div>`;
   el.innerHTML=html;
 }
 
-/* ── Init ── */
 (async()=>{
-  await loadAbsences();
-  updateHeader();
+  rebuildColors();
+  populateDropdown();
+  await loadAll();
   if(currentTab==='list') renderList();
 })();
 </script>
